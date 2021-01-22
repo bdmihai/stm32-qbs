@@ -68,9 +68,7 @@ Module {
     property string targetSeries
     property string targetMcu
 
-    property stringList defines: [
-        'CALL_ARM_SYSTEM_INIT'
-    ]
+    property stringList defines
     property stringList seriesDefines
     property stringList targetDefines
 
