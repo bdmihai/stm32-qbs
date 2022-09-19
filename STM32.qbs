@@ -154,6 +154,7 @@ Module {
         '-fstack-usage',
         '-Wall',
         '-Wextra',
+        '-Wl,--no-warn-rwx-segments', // disable the warning about rwx segments 
         '-Og',
         '-ggdb'
     ]
