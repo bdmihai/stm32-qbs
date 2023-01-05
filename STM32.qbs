@@ -77,17 +77,9 @@ Module {
     property pathList targetIncludePaths
 
     property stringList asmFlags: [
-        '-specs=nosys.specs',
-        '-specs=nano.specs',
-        '-masm-syntax-unified',
-        '-ffreestanding',
-        '-fno-exceptions',
-        '-fno-unwind-tables',
         '-ffunction-sections',
         '-fdata-sections',
         '-fstack-usage',
-        '-Wall',
-        '-Wextra',
         '-Og',
         '-ggdb'
     ]
@@ -144,7 +136,7 @@ Module {
 
     property stringList linkerFlags: [
         '-specs=nosys.specs',
-        '-specs=nano.specs',
+        //'-specs=nano.specs',
         '-masm-syntax-unified',
         '-ffreestanding',
         '-fno-exceptions',
@@ -155,6 +147,7 @@ Module {
         '-Wall',
         '-Wextra',
         '-Wl,--no-warn-rwx-segments', // disable the warning about rwx segments 
+        '-Wl,--gc-sections',
         '-Og',
         '-ggdb'
     ]
