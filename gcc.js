@@ -190,15 +190,11 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
             var lines = p.readStdOut().trim().split(/\r?\n/g);
             var tags = ['__data_start', '__data_end', '__text_start', '__text_end', '__rodata_start', '__rodata_end', '__bss_start', '__bss_end', '__heap_start', '__heap_end', '__stack_start', '__stack_end' ], symbols = [];
             lines.forEach(function(line) {
-                //console.info(line);
                 items = line.trim().split(' ');
                 if (tags.some(function(tag) { return items.contains(tag); })) {
                     symbols.push({ name: items[2], value: parseInt(items[0], 16) });
                 }
             });
-            //symbols.forEach(function(tag) {
-            //    console.info(tag.name + ' = ' + tag.value);
-            //});
             console.info('Target device ' + product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash);
             console.info('  .text   (FLASH)         =  ' + (symbols.filter(function(item) { return item.name === '__text_end'})[0].value - symbols.filter(function(item) { return item.name === '__text_start'})[0].value));
             console.info('  .rodata (FLASH)         =  ' + (symbols.filter(function(item) { return item.name === '__rodata_end'})[0].value - symbols.filter(function(item) { return item.name === '__rodata_start'})[0].value));
