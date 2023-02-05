@@ -79,7 +79,6 @@ Module {
     property stringList asmFlags: [
         '-ffunction-sections',
         '-fdata-sections',
-        '-fstack-usage',
         '-Og',
         '-ggdb'
     ]
@@ -87,13 +86,9 @@ Module {
     property stringList targetAsmFlags
 
     property stringList cFlags: [
-        '-std=gnu99',
-        '-specs=nosys.specs',
-        '-specs=nano.specs',
+        '-std=gnu11',
         '-masm-syntax-unified',
         '-ffreestanding',
-        '-fno-exceptions',
-        '-fno-unwind-tables',
         '-ffunction-sections',
         '-fdata-sections',
         '-fstack-usage',
@@ -106,19 +101,16 @@ Module {
     property stringList targetCFlags
 
     property stringList cxxFlags: [
-        '-std=gnu++11',
-        '-specs=nosys.specs',
-        '-specs=nano.specs',
+        '-std=gnu++17',
         '-masm-syntax-unified',
-        '-ffreestanding',
-        '-fno-exceptions',
-        '-fno-unwind-tables',
         '-ffunction-sections',
         '-fdata-sections',
         '-fstack-usage',
+        '-fno-unwind-tables',
         '-fno-exceptions',
         '-fno-rtti',
         '-fno-threadsafe-statics',
+        '-fno-use-cxa-atexit',
         '-Wall',
         '-Wextra',
         '-Og',
@@ -136,16 +128,10 @@ Module {
 
     property stringList linkerFlags: [
         '-specs=nosys.specs',
-        //'-specs=nano.specs',
-        '-masm-syntax-unified',
-        '-ffreestanding',
-        '-fno-exceptions',
-        '-fno-unwind-tables',
-        '-ffunction-sections',
-        '-fdata-sections',
-        '-fstack-usage',
-        '-Wall',
-        '-Wextra',
+        '-nostartfiles',
+        '-nodefaultlibs',
+        '-nolibc',
+        '-nostdlib',
         '-Wl,--no-warn-rwx-segments', // disable the warning about rwx segments 
         '-Wl,--gc-sections',
         '-Og',
