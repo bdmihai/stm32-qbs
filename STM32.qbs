@@ -128,6 +128,7 @@ Module {
 
     property stringList linkerFlags: [
         '-specs=nosys.specs',
+        '-specs=nano.specs',
         '-nostartfiles',
         '-nodefaultlibs',
         '-nolibc',
