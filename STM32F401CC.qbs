@@ -28,6 +28,9 @@
 STM32F4 {
     condition: qbs.targetPlatform === "STM32F401CC"
 
+    sizeofFlash: 256*1024
+    sizeofRam: 64*1024
+
     targetLine:  '01'
     targetPins:  'C'
     targetFlash: 'C'

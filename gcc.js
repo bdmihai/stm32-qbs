@@ -190,8 +190,7 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
             const lines = p.readStdOut().trim().split(/\r?\n/g);
             const sectionList = ['.isr_vector', '.text', '.rodata', '.data', '.bss', '.heap', '.stack'];
             const locationList = ['FLASH,RAM', 'FLASH', 'FLASH', 'FLASH,RAM', 'RAM,0', 'RAM', 'RAM'];
-
-            console.info(product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash);
+            var ramSize = 0; flashSize = 0;
             
             console.info(outputs.app[0].filePath);
             lines.forEach(function(line) {
@@ -201,15 +200,28 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
                     const section = items[0];
                     const size = items[1];
                     const address = parseInt(items[2], 10).toString(16);
+                    const end_address = (parseInt(items[2], 10) + parseInt(items[1], 10)).toString(16);
                     const location = locationList[sectionList.indexOf(section)];
                     console.info(
                         '   ' + section + 
                         ' '.repeat(18 - section.length) + '(' + location + ')' + 
                         ' '.repeat(10 - location.length) + '= ' + 
                         ' '.repeat(8 - size.length) + size + 
-                        ' '.repeat(6) + '0x' + '0'.repeat(8 - address.length) + address);
+                        ' '.repeat(6) + '0x' + '0'.repeat(8 - address.length) + address + ' - ' + '0x' + '0'.repeat(8 - end_address.length) + end_address);
+
+                    if (location.contains('FLASH')) {
+                        flashSize += parseInt(size, 10);
+                    }
+                    if (location.contains('RAM')) {
+                        ramSize += parseInt(size, 10);
+                    }
                 }
             });
+            console.info('Total used by ' + 
+                product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash + 
+                ' (' + product.stm32.sizeofFlash/1024 + 'kB, ' + product.stm32.sizeofRam/1024 + 'kB): ' +
+                flashSize + ' (' + Math.ceil(flashSize/product.stm32.sizeofFlash * 100) + '% FLASH) and ' + 
+                ramSize + ' (' + Math.ceil(ramSize/product.stm32.sizeofRam * 100) + '% RAM) ');
         } finally {
             p.close();
         }
