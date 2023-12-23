@@ -174,34 +174,42 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
     cmd.jobPool = 'linker';
     commands.push(cmd);
 
-    args = [/*'-Ax',*/ outputs.app[0].filePath];
-    var cmd = new Command(product.stm32.sizePath, args); // show the size of the executable total
-    cmd.jobPool = 'linker';
-    cmd.silent = true;
-    commands.push(cmd);
+    //args = [/*'-Ax',*/ outputs.app[0].filePath];
+    //var cmd = new Command(product.stm32.sizePath, args); // show the size of the executable total
+    //cmd.jobPool = 'linker';
+    //cmd.silent = true;
+    //commands.push(cmd);
 
     var cmd = new JavaScriptCommand();
     cmd.silent = true;
     cmd.sourceCode = function() {
-        var p = new Process();
+        const p = new Process();
         try {
-            args = ['--radix=x', outputs.app[0].filePath];
-            p.exec(product.stm32.nmPath, args, true);
-            var lines = p.readStdOut().trim().split(/\r?\n/g);
-            var tags = ['__data_start', '__data_end', '__text_start', '__text_end', '__rodata_start', '__rodata_end', '__bss_start', '__bss_end', '__heap_start', '__heap_end', '__stack_start', '__stack_end' ], symbols = [];
+            args = ['--format=sysv', '--radix=10', outputs.app[0].filePath];
+            p.exec(product.stm32.sizePath, args, true);
+            const lines = p.readStdOut().trim().split(/\r?\n/g);
+            const sectionList = ['.isr_vector', '.text', '.rodata', '.data', '.bss', '.heap', '.stack'];
+            const locationList = ['FLASH,RAM', 'FLASH', 'FLASH', 'FLASH,RAM', 'RAM,0', 'RAM', 'RAM'];
+
+            console.info(product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash);
+            
+            console.info(outputs.app[0].filePath);
             lines.forEach(function(line) {
-                items = line.trim().split(' ');
-                if (tags.some(function(tag) { return items.contains(tag); })) {
-                    symbols.push({ name: items[2], value: parseInt(items[0], 16) });
+                items = line.trim().split(' ').filter(function(i) {return i} );
+                
+                if (sectionList.includes(items[0])) {
+                    const section = items[0];
+                    const size = items[1];
+                    const address = parseInt(items[2], 10).toString(16);
+                    const location = locationList[sectionList.indexOf(section)];
+                    console.info(
+                        '   ' + section + 
+                        ' '.repeat(18 - section.length) + '(' + location + ')' + 
+                        ' '.repeat(10 - location.length) + '= ' + 
+                        ' '.repeat(8 - size.length) + size + 
+                        ' '.repeat(6) + '0x' + '0'.repeat(8 - address.length) + address);
                 }
             });
-            console.info('Target device ' + product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash);
-            console.info('  .text   (FLASH)         =  ' + (symbols.filter(function(item) { return item.name === '__text_end'})[0].value - symbols.filter(function(item) { return item.name === '__text_start'})[0].value));
-            console.info('  .rodata (FLASH)         =  ' + (symbols.filter(function(item) { return item.name === '__rodata_end'})[0].value - symbols.filter(function(item) { return item.name === '__rodata_start'})[0].value));
-            console.info('  .data   (RAM,FLASH)     =  ' + (symbols.filter(function(item) { return item.name === '__data_end'})[0].value - symbols.filter(function(item) { return item.name === '__data_start'})[0].value));
-            console.info('  .bss    (RAM)           =  ' + (symbols.filter(function(item) { return item.name === '__bss_end'})[0].value - symbols.filter(function(item) { return item.name === '__bss_start'})[0].value));
-            console.info('  .heap   (RAM)           =  ' + (symbols.filter(function(item) { return item.name === '__heap_end'})[0].value - symbols.filter(function(item) { return item.name === '__heap_start'})[0].value));
-            console.info('  .stack  (RAM)           =  ' + (symbols.filter(function(item) { return item.name === '__stack_end'})[0].value - symbols.filter(function(item) { return item.name === '__stack_start'})[0].value));
         } finally {
             p.close();
         }
