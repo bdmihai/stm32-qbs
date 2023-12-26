@@ -188,35 +188,45 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
             args = ['--format=sysv', '--radix=10', outputs.app[0].filePath];
             p.exec(product.stm32.sizePath, args, true);
             const lines = p.readStdOut().trim().split(/\r?\n/g);
-            const sectionList = ['.isr_vector', '.text', '.rodata', '.data', '.bss', '.heap', '.stack'];
-            const locationList = ['FLASH,RAM', 'FLASH', 'FLASH', 'FLASH,RAM', 'RAM,0', 'RAM', 'RAM'];
+            const sectionList  = [ 
+                { name: '.isr_vector', type: 'FLASH,RAM'},
+                { name: '.text',       type: 'FLASH'},
+                { name: '.rodata',     type: 'FLASH' },
+                { name: '.data',       type: 'FLASH,RAM'},
+                { name: '.bss',        type: 'RAM,0'},
+                { name: '.heap',       type: 'RAM'},
+                { name: '.stack',      type: 'RAM'},
+                { name: '.ccmram',     type: 'FLASH,CCM'}
+            ];
             var ramSize = 0; flashSize = 0;
             
             console.info(outputs.app[0].filePath);
             lines.forEach(function(line) {
                 items = line.trim().split(' ').filter(function(i) {return i} );
-                
-                if (sectionList.includes(items[0])) {
-                    const section = items[0];
-                    const size = items[1];
-                    const address = parseInt(items[2], 10).toString(16);
-                    const end_address = (parseInt(items[2], 10) + parseInt(items[1], 10)).toString(16);
-                    const location = locationList[sectionList.indexOf(section)];
-                    console.info(
-                        '   ' + section + 
-                        ' '.repeat(18 - section.length) + '(' + location + ')' + 
-                        ' '.repeat(10 - location.length) + '= ' + 
-                        ' '.repeat(8 - size.length) + size + 
-                        ' '.repeat(6) + '0x' + '0'.repeat(8 - address.length) + address + ' - ' + '0x' + '0'.repeat(8 - end_address.length) + end_address);
 
-                    if (location.contains('FLASH')) {
-                        flashSize += parseInt(size, 10);
+                sectionList.forEach(function(section) {
+                    if (section.name === items[0]) {
+                        section.size = items[1]
+                        section.start = parseInt(items[2], 10).toString(16);
+                        section.end = (parseInt(items[2], 10) + parseInt(items[1], 10)).toString(16);
+
+                        console.info(
+                            '   ' + section.name + 
+                            ' '.repeat(18 - section.name.length) + '(' + section.type + ')' + 
+                            ' '.repeat(10 - section.type.length) + '= ' + 
+                            ' '.repeat(8 - section.size.length) + section.size + 
+                            ' '.repeat(6) + '0x' + '0'.repeat(8 - section.start.length) + section.start + ' - ' + '0x' + '0'.repeat(8 - section.end.length) + section.end);
+
+                        if (section.type.contains('FLASH')) {
+                            flashSize += parseInt(section.size, 10);
+                        }
+                        if (section.type.contains('RAM') || section.type.contains('CCM') ) {
+                            ramSize += parseInt(section.size, 10);
+                        }
                     }
-                    if (location.contains('RAM')) {
-                        ramSize += parseInt(size, 10);
-                    }
-                }
+                });
             });
+
             console.info('Total used by ' + 
                 product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash + 
                 ' (' + product.stm32.sizeofFlash/1024 + 'kB, ' + product.stm32.sizeofRam/1024 + 'kB): ' +

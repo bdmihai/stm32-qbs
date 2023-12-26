@@ -68,8 +68,8 @@ Module {
     property string targetSeries
     property string targetMcu
 
-    property int sizeofFlash
-    property int sizeofRam
+    property int sizeofFlash: 0
+    property int sizeofRam: 0
 
     property stringList defines
     property stringList seriesDefines
