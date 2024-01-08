@@ -38,7 +38,7 @@ Module {
 
     property string assemblerName:        toolchainPrefix + 'gcc'
     property string compilerName:         toolchainPrefix + 'gcc'
-    property string cxxCompilerName:      toolchainPrefix + 'c++'
+    property string cxxCompilerName:      toolchainPrefix + 'g++'
     property string linkerName:           toolchainPrefix + 'ld'
     property string archiverName:         toolchainPrefix + 'ar'
     property string objcopyName:          toolchainPrefix + 'objcopy'
