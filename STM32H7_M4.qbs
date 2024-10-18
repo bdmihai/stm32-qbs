@@ -30,7 +30,7 @@ STM32 {
 
     targetType:   'H'
     targetCore:   '4'
-    targetSeries: 'STM32H4'
+    targetSeries: 'STM32H7'
 
     seriesAsmFlags: [
         '-mcpu=cortex-m4',
