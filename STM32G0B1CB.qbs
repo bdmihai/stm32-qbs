@@ -28,8 +28,8 @@
 STM32G0 {
     condition: qbs.targetPlatform === "STM32G0B1CB"
 
-    sizeofFlash: 144*1024
-    sizeofRam: 128*1024
+    sizeofFlash: 128*1024
+    sizeofRam: 144*1024
 
     targetLine:  'B1'
     targetPins:  'C'

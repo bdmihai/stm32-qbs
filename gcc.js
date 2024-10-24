@@ -229,7 +229,7 @@ function prepareLinker(project, product, inputs, outputs, input, output, explici
 
             console.info('Total used by ' + 
                 product.stm32.targetFamily + product.stm32.targetType + product.stm32.targetCore + product.stm32.targetLine + product.stm32.targetPins + product.stm32.targetFlash + 
-                ' (' + product.stm32.sizeofFlash/1024 + 'kB, ' + product.stm32.sizeofRam/1024 + 'kB): ' +
+                ' (out of ' + product.stm32.sizeofFlash/1024 + 'kB FLASH, ' + product.stm32.sizeofRam/1024 + 'kB RAM): ' +
                 flashSize + ' (' + Math.ceil(flashSize/product.stm32.sizeofFlash * 100) + '% FLASH) and ' + 
                 ramSize + ' (' + Math.ceil(ramSize/product.stm32.sizeofRam * 100) + '% RAM) ');
         } finally {
